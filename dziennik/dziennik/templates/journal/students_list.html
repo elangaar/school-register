@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %} Lista uczniów klasy {% endblock title %}
+
+{% block content %}
+
+{% for student in students_degrees %}
+    <p> {{ student.first_name }} {{ student.last_name }}
+    {% for category in categories_of_degrees %}
+        {{ category }}
+        {% for degree in student.degrees %}
+            {% ifequal degree.1 category %}
+                {{ degree.0 }}
+            {% endifequal %}
+        {% endfor %}
+    {% endfor %} 
+    {{ student.average }} </p>
+{% endfor %}
+
+{% endblock content %}
