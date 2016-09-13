@@ -4,13 +4,13 @@
 
 {% block content %}
 
-{% for student in students_degrees %}
-    <p> {{ student.first_name }} {{ student.last_name }}
-    {% for category in categories_of_degrees %}
+{% for student in students_grades %}
+    <p> {{ student.last_name }} {{ student.first_name }}
+    {% for category in categories_of_grades %}
         {{ category }}
-        {% for degree in student.degrees %}
-            {% ifequal degree.1 category %}
-                {{ degree.0 }}
+        {% for grade in student.grades %}
+            {% ifequal grade.1 category %}
+                {{ grade.0 }}
             {% endifequal %}
         {% endfor %}
     {% endfor %} 

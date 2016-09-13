@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block title %} Lista klas {% endblock title %}
+
+{% block content %}
+{% for class in object_list %}
+    <p> {{ class.level }}{{class.branch }} </p>
+{% endfor %}
+{% endblock content %}
