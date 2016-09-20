@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %} Uwaga {{ object.title }} {% endblock %}
+
+{% block content %}
+<p> {{ object.title }} </p>
+<p> {{ object.content }} </p>
+<p> Lista uczniów przypisanych do tej uwagi: </p>
+{% for student in object.student_set.all %}
+<p> {{ student.last_name }} {{ student.first_name }} </p>
+{% endfor %}
+{% endblock content %}

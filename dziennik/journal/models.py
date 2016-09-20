@@ -7,12 +7,13 @@ from django.utils.text import slugify
 class Employee(models.Model):
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
+    pesel = models.BigIntegerField()
     position = models.ForeignKey('Position')
     which_class = models.ForeignKey('Class_', null=True, blank=True, default=True)
     slug = models.SlugField(unique=True)
 
     def __str__(self):
-        return "{0} {1}".format(self.first_name, self.last_name)
+        return "{0} {1}".format(self.last_name, self.first_name)
 
 
 class Position(models.Model):
@@ -84,12 +85,12 @@ class Student(models.Model):
     which_class = models.ForeignKey('Class_')
     grades = models.ManyToManyField('Grade',
     related_name='student')
-    notes = models.ForeignKey('Note', null=True, blank=True)
-    parents = models.ForeignKey('Parent')
+    notes = models.ManyToManyField('Note')
+    parents = models.ManyToManyField('Parent')
     slug = models.SlugField(unique=True)
 
     def __str__(self):
-        return "{0} {1}".format(self.first_name, self.last_name)
+        return "{0} {1}".format(self.last_name, self.first_name)
 
 
 class Grade(models.Model):
@@ -117,10 +118,10 @@ class Parent(models.Model):
     slug = models.SlugField(unique=True)
 
     def __str__(self):
-        return "{0} {1}".format(self.first_name, self.last_name)
+        return "{0} {1}".format(self.last_name, self.first_name)
 
 
-def create_slug_position_(instance):
+def create_slug_position(instance):
     slug = slugify("%s" % (instance.name, ))
     return slug
 
@@ -144,35 +145,50 @@ def create_slug_grade(instance):
     slug = slugify("%s" % (instance.value, ))
     return slug
 
-def create_slug_employee_student_parent(instance, new_slug=None):
-    slug = slugify("%s-%s" % (instance.first_name, instance.last_name))
+def create_slug_employee(instance, new_slug=None):
+    slug = slugify("%s-%s" % (instance.last_name, instance.first_name))
     if new_slug is not None:
         slug = new_slug
-    qs = Class_.objects.filter(slug=slug).order_by("-id")
+    qs = Employee.objects.filter(slug=slug).order_by("-id")
     exists = qs.exists()
     if exists:
-        new_slug = "%s-%s-%s" % (instance.first_name, instance.last_name, qs.first().id)
-        return create_slug(instance, new_slug=new_slug)
+        new_slug = "%s-%s-%s" % (instance.last_name, instance.first_name, qs.first().id)
+        return create_slug_employee(instance, new_slug=new_slug)
+    return slug
+
+def create_slug_student(instance, new_slug=None):
+    slug = slugify("%s-%s" % (instance.last_name, instance.first_name))
+    if new_slug is not None:
+        slug = new_slug
+    qs = Student.objects.filter(slug=slug).order_by("-id")
+    exists = qs.exists()
+    if exists:
+        new_slug = "%s-%s-%s" % (instance.last_name, instance.first_name, qs.first().id)
+        return create_slug_student(instance, new_slug=new_slug)
     return slug
 
 def create_slug_note(instance, new_slug=None):
     slug = slugify("%s" % (instance.title))
+    return slug
+
+def create_slug_parent(instance, new_slug=None):
+    slug = slugify("%s-%s" % (instance.last_name, instance.first_name))
     if new_slug is not None:
         slug = new_slug
-    qs = Class_.objects.filter(slug=slug).order_by("-id")
+    qs = Parent.objects.filter(slug=slug).order_by("-id")
     exists = qs.exists()
     if exists:
-        new_slug = "%s-%s" % (instance.title, qs.first().id)
-        return create_slug(instance, new_slug=new_slug)
+        new_slug = "%s-%s-%s" % (instance.last_name, instance.first_name, qs.first().id)
+        return create_slug_employee(instance, new_slug=new_slug)
     return slug
 
 def pre_save_employee_receiver(sender, instance, *args, **kwargs):
     if not instance.slug:
-        instance.slug = create_slug_employee_student_parent(instance)
+        instance.slug = create_slug_employee(instance)
 
 def pre_save_student_receiver(sender, instance, *args, **kwargs):
     if not instance.slug:
-        instance.slug = create_slug_employee_student_parent(instance)
+        instance.slug = create_slug_student(instance)
 
 def pre_save_parent_receiver(sender, instance, *args, **kwargs):
     if not instance.slug:

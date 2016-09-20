@@ -1,18 +1,10 @@
 from django.shortcuts import render
 
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, View
 
-from .models import (Student, Grade, Class_, )
-
-# Create your views here.
-
-# class StudentListView(ListView):
-#    template_name="journal/students_list.html"
-#    model = Student
-#
-#    def get_context_data(self, **kwargs):
-#        context = super(StudentListView, self).get_context_data(**kwargs)
-#        return context
+from .models import (Student, Grade, Class_, Employee, Note, 
+                     Classroom, Parent, Position
+                    )
 
 CATEGORIES_OF_GRADES = ["test", "oral_answer", "homework"]
 NO_GRADES_MESSAGE = "Brak ocen"
@@ -46,8 +38,18 @@ def student_average(data):
     return average
 
 
+class StudentListView(ListView):
+    template_name = "journal/student_list.html"
+    model = Student
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['average'] = "Średnia"
+        return context
+
+
 def student_list(request):
-    students_queryset = Student.objects.all().order_by('last_name')
+    students_queryset = Student.objects.filter().order_by('last_name')
     deg = []
     stud = {}
     for student in students_queryset:
@@ -58,13 +60,17 @@ def student_list(request):
         deg.append(stud)
         stud = {}
 
-
     context = {
         'students': students_queryset,
         'students_grades': deg,
         'categories_of_grades': CATEGORIES_OF_GRADES,
     }
-    return render(request, "journal/students_list.html", context)
+    return render(request, "journal/student_list.html", context)
+
+
+class StudentDetailView(DetailView):
+    template_name = "journal/student_detail.html"
+    model = Student
 
 
 class ClassListView(ListView):
@@ -75,3 +81,55 @@ class ClassListView(ListView):
 class ClassDetailView(DetailView):
     template_name = "journal/class_detail.html"
     model = Class_
+
+
+class EmployeeListView(ListView):
+    template_name = "journal/employee_list.html"
+    model = Employee
+
+class EmployeeDetailView(DetailView):
+    template_name = "journal/employee_detail.html"
+    model = Employee
+
+class NoteListView(ListView):
+    template_name = "journal/note_list.html"
+    model = Note
+
+class NoteDetailView(DetailView):
+    template_name = "journal/note_detail.html"
+    model = Note
+
+class ClassroomListView(ListView):
+    template_name = "journal/classroom_list.html"
+    model = Classroom
+
+class ClassroomDetailView(DetailView):
+    template_name = "journal/Classroom_detail.html"
+    model = Classroom
+
+class ParentListView(ListView):
+    template_name = "journal/parent_list.html"
+    model = Parent
+
+class ParentDetailView(DetailView):
+    template_name = "journal/parent_detail.html"
+    model = Parent
+
+class PositionListView(ListView):
+    template_name = "journal/position_list.html"
+    model = Position
+    context_object_name = "position_list"
+
+class PositionDetailView(DetailView):
+    template_name = "journal/position_detail.html"
+    model = Position
+
+from django.http import HttpResponse
+
+def my_view(request):
+    if request.method == "GET":
+        return HttpResponse("Wynik GET z widoku")
+
+class MyView(View):
+    def get(self, request):
+        return HttpResponse("Wynik GET z MyWiew")

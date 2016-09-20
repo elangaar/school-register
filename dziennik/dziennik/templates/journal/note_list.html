@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block title %} Uwagi {% endblock title %}
+
+{% block content %}
+{% for note in object_list %}
+    <p> {{ note.title }} </p>
+{% endfor %}
+{% endblock content %}

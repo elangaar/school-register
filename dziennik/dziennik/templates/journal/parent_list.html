@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %} Rodzice {% endblock title %}
+:
+{% block content %}
+{% for parent in object_list %}
+    <p> {{ parent.last_name }} {{ parent.first_name }} - 
+    {% for student in parent.student_set.all %}
+        {{ student.last_name }} {{ student.first_name }}
+    {% endfor %} </p>
+    
+{% endfor %}
+{% endblock content %}

@@ -1,7 +1,16 @@
 {% extends "base.html" %}
 
-{% block title %} Klasa - detale {% endblock title %}
+{% block title %} Klasa {{ object.level }}{{ object.branch }} {% endblock title %}
 
 {% block content %}
+<p> Klasa: {{ object.level }}{{ object.branch }} </p>
+<p> Sala lekcyjna: {{ object.classroom }} </p>
+<p> Szkoła: {{ object.school }} </p>
+<h3> Uczniowie: </h3>
+{% for student in object.student_set.all %}
+<p><a href="{% url 'journal:student-detail' student.slug %}"> {{ student }} </a></p>
+{% endfor %}
+<p> <a href="{% url 'journal:student-list' %}"> Uczniowie szkoły</a></p>
+
 
 {% endblock content %}
