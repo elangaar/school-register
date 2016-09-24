@@ -12,9 +12,5 @@
 {% for parent in object.parents.all %}
     <p> {{ parent.last_name }} {{ parent.first_name }} </p>
 {% endfor %}
-<p> Uwagi: </p>
-{% for note in object.notes.all %}
-<p> {{ note.title }} </p>
-<p> {{ note.content }} </p>
-{% endfor %}
+<p> <a href="{% url "journal:note-list" object.slug %}"> Uwagi <a/></p>
 {% endblock %}

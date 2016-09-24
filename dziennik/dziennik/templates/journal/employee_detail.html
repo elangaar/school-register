@@ -2,5 +2,10 @@
 
 {% block title %} {{ object.last_name }} {{ object.first_name }} {% endblock title %}
 {% block content %}
+<p> {{ object.last_name }} {{ object.first_name }} </p>
+<p> {{ object.pesel }} </p>
+<p> {{ object.position }} </p>
+<p> {{ object.which_class.level }}{{ object.which_class.branch }} </p>
+
 
 {% endblock content %}
