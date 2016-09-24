@@ -4,7 +4,9 @@
 
 {% block content %}
 {% for student in object_list %}
-    <p> {{ student.last_name }} {{ student.first_name }} - 
-    {{ student.which_class.level }}{{ student.which_class.branch }} </p>
+    <p> <a href="{% url "journal:student-detail" student.slug %}"> 
+        {{ student.last_name }} {{ student.first_name }} </a> - 
+    <a href="{% url "journal:class-detail" student.which_class.slug %}"> 
+        {{ student.which_class.level }}{{ student.which_class.branch }}</a> </p>
 {% endfor %}
 {% endblock content %}
