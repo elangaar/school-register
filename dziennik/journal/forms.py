@@ -9,12 +9,11 @@ class StudentForm(forms.ModelForm):
         fields = ['first_name', 'second_name', 'last_name', 'pesel',
                   'which_class', 'parents']
 
-
 class EmployeeForm(forms.ModelForm):
 
     class Meta:
         model = Employee
-        fields = ['first_name', 'last_name', 'pesel', 'position',
+        fields = ['first_name', 'second_name', 'last_name', 'pesel', 'position',
                   'which_class']
 
 
@@ -70,5 +69,5 @@ class ParentForm(forms.ModelForm):
 
     class Meta:
         model = Parent
-        fields = ['first_name', 'last_name', 'telephone_number']
+        fields = ['first_name', 'second_name', 'last_name', 'telephone_number']
 

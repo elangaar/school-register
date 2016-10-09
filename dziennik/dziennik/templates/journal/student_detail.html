@@ -2,15 +2,21 @@
 
 {% block title %} {{ object.last_name }} {{ object.first_name }} {% endblock title %}
 {% block content %}
-<h2> {{ object.last_name }} {{ object.first_name }} </h2>
+<h2> {{ object.last_name }} {% if object.second_name %}
+    {{ object.second_name }} {% endif %} {{ object.first_name }} </h2>
 <p> Pesel: {{ object.pesel }} </p>
-<p> Klasa: {{ object.which_class.level }}{{ object.which_class.branch }}</p>
+<p> Klasa: <a href="{{ object.which_class.get_absolute_url }}"> 
+    {{ object.which_class.level }}{{ object.which_class.branch }} </a></p>
+<p> Oceny:
 {% for grade in object.grades.values.values %}
     {{ grade.value }}
-{% endfor %}
-<p> Rodzice: </p>
+{% endfor %} </p>
+<p> Rodzice: 
 {% for parent in object.parents.all %}
-    <p> {{ parent.last_name }} {{ parent.first_name }} </p>
-{% endfor %}
-<p> <a href="{% url "journal:note-list" object.slug %}"> Uwagi <a/></p>
+<a href="{{ parent.get_absolute_url }}"> 
+    {{ parent.last_name }} {{ parent.first_name }} </a>
+{% endfor %}</p>
+<p> <a href="{% url 'journal:note-list' object.slug %}"> Uwagi <a/></p>
+<p> <a href="{% url 'journal:student-update' object.slug %}"> Edytuj </a> </p>
+<p> <a href="{% url 'journal:student-delete' object.slug %}"> Usuń </a> </p>
 {% endblock %}

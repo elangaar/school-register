@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %} Usuń ucznia {{ object }} {% endblock title %}
+
+{% block content %}
+<form action="" method="POST">
+    {% csrf_token %}
+    <p> Czy naprawdę chcesz usunąć ucznia {{ object }} ? </p>
+    <input type="submit" value="Ołkej" />
+    <input type="submit" name="cancel" value="Anuluj" />
+</form>
+{% endblock content %}

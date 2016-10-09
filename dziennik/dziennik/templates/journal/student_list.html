@@ -3,10 +3,13 @@
 {% block title %} Lista uczniów  {% endblock title %}
 
 {% block content %}
+<h2> Lista uczniów szkoły: </h2>
 {% for student in object_list %}
     <p> <a href="{% url "journal:student-detail" student.slug %}"> 
         {{ student.last_name }} {{ student.first_name }} </a> - 
     <a href="{% url "journal:class-detail" student.which_class.slug %}"> 
         {{ student.which_class.level }}{{ student.which_class.branch }}</a> </p>
 {% endfor %}
+{% if user.is_authenticated %} <p><a href="{% url "journal:student-add" %}">
+    Dodaj ucznia </a></p> {% endif %}
 {% endblock content %}

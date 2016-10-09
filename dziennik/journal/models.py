@@ -2,12 +2,14 @@ from django.db import models
 from django.db.models.signals import pre_save
 from django.utils.text import slugify
 from django.core.urlresolvers import reverse
+from django.contrib.auth.models import User
 
 
 # Create your models here.
 
 class Employee(models.Model):
     first_name = models.CharField(max_length=30)
+    second_name = models.CharField(max_length=30, null=True, blank=True)
     last_name = models.CharField(max_length=30)
     pesel = models.BigIntegerField()
     position = models.ForeignKey('Position')
@@ -15,7 +17,7 @@ class Employee(models.Model):
     slug = models.SlugField(unique=True)
 
     class Meta:
-        ordering = ['last_name', 'first_name']
+        ordering = ['position', 'last_name', 'first_name']
 
     def get_absolute_url(self):
         return reverse('journal:employee-detail', args=[self.slug])
@@ -33,7 +35,7 @@ class Position(models.Model):
         ordering = ['name']
 
     def get_absolute_url(self):
-        return reverse("journal:position_detail", args=[self.slug])
+        return reverse("journal:position-detail", args=[self.slug])
 
     def __str__(self):
         return self.name
@@ -42,7 +44,7 @@ class Position(models.Model):
 class Class_(models.Model):
     level = models.PositiveIntegerField()
     branch = models.CharField(max_length=1)
-    classroom = models.ForeignKey('Classroom', null=True)
+    classroom = models.ForeignKey('Classroom')
     school = models.ForeignKey('School', null=True)
     slug = models.SlugField(unique=True)
 
@@ -100,7 +102,7 @@ class School(models.Model):
 
 class Subject(models.Model):
     name = models.CharField(max_length=30)
-    classroom = models.ManyToManyField('Classroom')
+    classroom = models.ManyToManyField('Classroom', blank=True)
     slug = models.SlugField(unique=True)
 
     class Meta:
@@ -115,12 +117,11 @@ class Subject(models.Model):
 
 class Student(models.Model):
     first_name = models.CharField(max_length=30)
+    second_name = models.CharField(max_length=30, null=True, blank=True)
     last_name = models.CharField(max_length=30)
     pesel = models.BigIntegerField()
     which_class = models.ForeignKey('Class_')
-    grades = models.ManyToManyField('Grade',
-    related_name='student')
-    # notes = models.OneToOneField('Note')
+    grades = models.ManyToManyField('Grade', related_name='student')
     parents = models.ManyToManyField('Parent')
     slug = models.SlugField(unique=True)
 
@@ -128,10 +129,13 @@ class Student(models.Model):
         ordering = ['first_name', 'last_name']
 
     def get_absolute_url(self):
-        return reverse("journal:Student-detail", args=[self.slug])
+        return reverse("journal:student-detail", args=[self.slug])
 
     def __str__(self):
-        return "{0} {1}".format(self.last_name, self.first_name)
+        if self.second_name:
+            return "{0} {1} {2}".format(self.last_name, self.second_name, self.first_name)
+        else:
+            return "{0} {1}".format(self.last_name, self.first_name)
 
 
 class Grade(models.Model):
@@ -147,7 +151,8 @@ class Grade(models.Model):
         return reverse("journal:grade-detail", args=[self.grade])
 
     def __str__(self):
-        return "{0} {1}".format(self.value, self.category)
+        return "{0} {1} {2}".format(self.value, self.category,
+                                    self.subject.name)
 
 
 class Note(models.Model):
@@ -167,6 +172,7 @@ class Note(models.Model):
 
 class Parent(models.Model):
     first_name = models.CharField(max_length=30)
+    second_name = models.CharField(max_length=30, null=True, blank=True)
     last_name = models.CharField(max_length=30)
     telephone_number = models.BigIntegerField()
     slug = models.SlugField(unique=True)
@@ -179,6 +185,8 @@ class Parent(models.Model):
 
     def __str__(self):
         return "{0} {1}".format(self.last_name, self.first_name)
+
+
 
 
 def create_slug_position(instance):
@@ -202,8 +210,9 @@ def create_slug_subject(instance):
     slug = slugify("%s" % (instance.name, ))
     return slug
 
-def create_slug_grade(instance):
-    slug = slugify("%s" % (instance.value, ))
+def create_slug_grade(instance, new_slug=None):
+    slug = slugify("%s-%s-%s" % (instance.value, instance.category,
+                                 instance.subject))
     return slug
 
 def create_slug_employee(instance, new_slug=None):
@@ -230,6 +239,13 @@ def create_slug_student(instance, new_slug=None):
 
 def create_slug_note(instance, new_slug=None):
     slug = slugify("%s" % (instance.title))
+    if new_slug is not None:
+        slug = new_slug
+    qs = Note.objects.filter(slug=slug).order_by("-id")
+    exists = qs.exists()
+    if exists:
+        new_slug = "%s-%s-%s" % (instance.title, qs.first().id)
+        return create_slug_note(instance, new_slug=new_slug)
     return slug
 
 def create_slug_parent(instance, new_slug=None):
@@ -257,7 +273,7 @@ def pre_save_student_receiver(sender, instance, *args, **kwargs):
 
 def pre_save_parent_receiver(sender, instance, *args, **kwargs):
     if not instance.slug:
-        instance.slug = create_slug_employee_student_parent(instance)
+        instance.slug = create_slug_parent(instance)
 
 def pre_save_note_receiver(sender, instance, *args, **kwargs):
     if not instance.slug:
@@ -288,7 +304,10 @@ pre_save.connect(pre_save_student_receiver, sender=Student)
 pre_save.connect(pre_save_parent_receiver, sender=Parent)
 pre_save.connect(pre_save_note_receiver, sender=Note)
 pre_save.connect(pre_save_position_receiver, sender=Position)
+pre_save.connect(pre_save_classroom_receiver, sender=Classroom)
 pre_save.connect(pre_save_class__receiver, sender=Class_)
 pre_save.connect(pre_save_school_receiver, sender=School)
 pre_save.connect(pre_save_subject_receiver, sender=Subject)
 pre_save.connect(pre_save_grade_receiver, sender=Grade)
+
+

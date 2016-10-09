@@ -1,16 +1,24 @@
 from django.shortcuts import render
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, reverse_lazy
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 
-from django.views.generic import ListView, DetailView, View
+from django.views.generic import (
+    ListView, DetailView, View,
+    DeleteView, UpdateView,
+)
 
-from .models import (Student, Grade, Class_, Employee, Note,
-                     Classroom, Parent, Position, School, Subject, Grade,
-                    )
-from .forms import (StudentForm, NoteForm, ClassForm, EmployeeForm,
-                    ClassroomForm, ParentForm, PositionForm, SchoolForm,
-                    SubjectForm, GradeForm)
+from .models import (
+    Student, Grade, Class_, Employee, Note,
+    Classroom, Parent, Position, School, Subject, Grade,
+)
+from .forms import (
+    StudentForm, NoteForm, ClassForm, EmployeeForm,
+    ClassroomForm, ParentForm, PositionForm, SchoolForm,
+    SubjectForm, GradeForm
+)
 
 
 CATEGORIES_OF_GRADES = ["test", "oral_answer", "homework"]
@@ -167,6 +175,16 @@ class GradeDetailView(DetailView):
     model = Grade
 
 
+class UserDetailView(DetailView):
+    template_name = "journal/user_detail.html"
+    model = User
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user'] = 'user'
+        return context
+
+@login_required
 def student_add(request):
     if request.method == 'POST':
         form = StudentForm(request.POST)
@@ -191,6 +209,7 @@ def class_add(request):
     if request.method == 'POST':
         form = ClassForm(request.POST)
         if form.is_valid():
+            form.save()
             return HttpResponseRedirect(reverse('journal:class-list'))
     else:
         form = ClassForm()
@@ -200,6 +219,7 @@ def employee_add(request):
     if request.method == 'POST':
         form = EmployeeForm(request.POST)
         if form.is_valid():
+            form.save()
             return HttpResponseRedirect(reverse('journal:employee-list'))
     else:
         form = EmployeeForm()
@@ -209,6 +229,7 @@ def classroom_add(request):
     if request.method == 'POST':
         form = ClassroomForm(request.POST)
         if form.is_valid():
+            form.save()
             return HttpResponseRedirect(reverse('journal:classroom-list'))
     else:
         form = ClassroomForm()
@@ -218,6 +239,7 @@ def parent_add(request):
     if request.method == 'POST':
         form = ParentForm(request.POST)
         if form.is_valid():
+            form.save()
             return HttpResponseRedirect(reverse('journal:parent-list'))
     else:
         form = ParentForm()
@@ -227,24 +249,27 @@ def position_add(request):
     if request.method == 'POST':
         form = PositionForm(request.POST)
         if form.is_valid():
+            form.save()
             return HttpResponseRedirect(reverse('journal:position-list'))
     else:
         form = PositionForm()
-    return reverse(request, "journal/forms/position_add.html", {'form':form})
+    return render(request, "journal/forms/position_add.html", {'form':form})
 
 def school_add(request):
     if request.method == 'POST':
         form = SchoolForm(request.POST)
         if form.is_valid():
-            return HttpResponseRedirect(reverse('journal:school-list'))
+            form.save()
+            return HttpResponseRedirect(reverse('index'))
     else:
         form = SchoolForm()
-    return reverse(request, "journal/forms/school_add.html", {'form':form})
+    return render(request, "journal/forms/school_add.html", {'form':form})
 
 def subject_add(request):
     if request.method == 'POST':
         form = SubjectForm(request.POST)
         if form.is_valid():
+            form.save()
             return HttpResponseRedirect(reverse('journal:subject-list'))
     else:
         form = SubjectForm()
@@ -252,12 +277,36 @@ def subject_add(request):
 
 def grade_add(request):
     if request.method == 'POST':
-        form = GradeFotm(request.POST)
+        form = GradeForm(request.POST)
         if form.is_valid():
+            form.save()
             return HttpResponseRedirect(reverse('journal:student-list'))
     else:
         form = GradeForm()
-    return reverse(request, "journal/forms/grade_add.html", {'form':form})
+    return render(request, "journal/forms/grade_add.html", {'form':form})
+
+
+class StudentDeleteView(DeleteView):
+    model = Student
+    success_url = reverse_lazy('journal:student-list')
+
+    def post(self, request, *args, **kwargs):
+        if 'cancel' in request.POST:
+            url = self.success_url
+            return HttpResponseRedirect(url)
+        else:
+            return super().post(self, *args, **kwargs)
+
+
+class StudentUpdateView(UpdateView):
+    model = Student
+    fields = [
+        'first_name', 'second_name', 'last_name', 'pesel',
+        'which_class', 'grades', 'parents',
+    ]
+    template_name_suffix = '_update_form'
+
+
 
 from django.http import HttpResponse
 
