@@ -1,18 +1,18 @@
 from django.contrib import admin
 
-from journal.models import (Employee, Position, Class_, Classroom, School,
-                            Subject, Student, Grade, Note, Parent)
+from journal.models import (Position, Class_, Classroom, School,
+                            Subject, Student, Grade, Note, Person)
 
-class EmployeeAdmin(admin.ModelAdmin):
-    exclude = ('slug',)
+# class EmployeeAdmin(admin.ModelAdmin):
+#    exclude = ('slug',)
 
 
 class StudentAdmin(admin.ModelAdmin):
     exclude = ('slug',)
 
 
-class ParentAdmin(admin.ModelAdmin):
-    exclude = ('slug',)
+# class ParentAdmin(admin.ModelAdmin):
+#     exclude = ('slug',)
 
 
 class NoteAdmin(admin.ModelAdmin):
@@ -45,7 +45,7 @@ class GradeAdmin(admin.ModelAdmin):
 # Register your models here.
 
 
-admin.site.register(Employee, EmployeeAdmin)
+# admin.site.register(Employee, EmployeeAdmin)
 admin.site.register(Position, PositionAdmin)
 admin.site.register(Class_, Class_Admin)
 admin.site.register(Classroom, ClassroomAdmin)
@@ -54,5 +54,5 @@ admin.site.register(Subject, SubjectAdmin)
 admin.site.register(Student, StudentAdmin)
 admin.site.register(Grade, GradeAdmin)
 admin.site.register(Note, NoteAdmin)
-admin.site.register(Parent, ParentAdmin)
-
+# admin.site.register(Parent, ParentAdmin)
+admin.site.register(Person)

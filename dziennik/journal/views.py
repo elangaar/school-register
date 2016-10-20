@@ -4,6 +4,9 @@ from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.utils.decorators import method_decorator
+from django.contrib.auth.models import Permission
+from guardian.decorators import permission_required_or_403
 
 from django.views.generic import (
     ListView, DetailView, View,
@@ -11,12 +14,13 @@ from django.views.generic import (
 )
 
 from .models import (
-    Student, Grade, Class_, Employee, Note,
-    Classroom, Parent, Position, School, Subject, Grade,
+    Student, Grade, Class_, Note,
+    Classroom, Position, School, Subject, Grade,
+    Person,
 )
 from .forms import (
-    StudentForm, NoteForm, ClassForm, EmployeeForm,
-    ClassroomForm, ParentForm, PositionForm, SchoolForm,
+    StudentForm, NoteForm, ClassForm,
+    ClassroomForm, PositionForm, SchoolForm,
     SubjectForm, GradeForm
 )
 
@@ -40,7 +44,7 @@ def student_average(data):
         if grade[1] == "test":
             test.append(grade[0])
         elif grade[1] == "oral_answer":
-            oral_answer.append(grade[0])
+           oral_answer.append(grade[0])
         elif grade[1] == "homework":
             homework.append(grade[0])
     try:
@@ -49,14 +53,13 @@ def student_average(data):
         average = round((sum_values/length), 2)
     except ZeroDivisionError:
         average = NO_GRADES_MESSAGE
-
     return average
 
 
+#@method_decorator(permission_required_or_403('journal.view_student'), name='dispatch')
 class StudentListView(ListView):
     template_name = "journal/student_list.html"
     model = Student
-    # paginate_by = 2
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -64,6 +67,7 @@ class StudentListView(ListView):
         return context
 
 
+#@permission_required('journal.view_student', return_403=True)
 def student_list(request):
     students_queryset = Student.objects.filter().order_by('last_name')
     deg = []
@@ -84,9 +88,14 @@ def student_list(request):
     return render(request, "journal/student_list.html", context)
 
 
+@method_decorator(permission_required_or_403('journal.view_student', 
+                                             (Student, 'slug', 'slug'), accept_global_perms=True), name='dispatch')
 class StudentDetailView(DetailView):
     template_name = "journal/student_detail.html"
     model = Student
+
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
 
 
 class ClassListView(ListView):
@@ -94,19 +103,21 @@ class ClassListView(ListView):
     model = Class_
 
 
+@method_decorator(login_required, name='dispatch')
 class ClassDetailView(DetailView):
     template_name = "journal/class_detail.html"
     model = Class_
 
 
-class EmployeeListView(ListView):
-    template_name = "journal/employee_list.html"
-    model = Employee
+# class EmployeeListView(ListView):
+#     template_name = "journal/employee_list.html"
+#     model = Employee
 
 
-class EmployeeDetailView(DetailView):
-    template_name = "journal/employee_detail.html"
-    model = Employee
+# @method_decorator(login_required, name='dispatch')
+# class EmployeeDetailView(DetailView):
+#     template_name = "journal/employee_detail.html"
+#     model = Employee
 
 
 class NoteListView(ListView):
@@ -116,6 +127,8 @@ class NoteListView(ListView):
         student = self.kwargs['slug']
         return Note.objects.filter(student__slug=student)
 
+
+@method_decorator(login_required, name='dispatch')
 class NoteDetailView(DetailView):
     template_name = "journal/note_detail.html"
     model = Note
@@ -126,6 +139,7 @@ class ClassroomListView(ListView):
     model = Classroom
 
 
+@method_decorator(login_required, name='dispatch')
 class ClassroomDetailView(DetailView):
     template_name = "journal/classroom_detail.html"
     model = Classroom
@@ -134,14 +148,15 @@ class ClassroomDetailView(DetailView):
     #    return get_object_or_404(Classroom, pk=self.number)
 
 
-class ParentListView(ListView):
-    template_name = "journal/parent_list.html"
-    model = Parent
+# class ParentListView(ListView):
+#     template_name = "journal/parent_list.html"
+#     model = Parent
 
 
-class ParentDetailView(DetailView):
-    template_name = "journal/parent_detail.html"
-    model = Parent
+# @method_decorator(login_required, name='dispatch')
+# class ParentDetailView(DetailView):
+#     template_name = "journal/parent_detail.html"
+#     model = Parent
 
 
 class PositionListView(ListView):
@@ -150,11 +165,13 @@ class PositionListView(ListView):
     context_object_name = "position_list"
 
 
+@method_decorator(login_required, name='dispatch')
 class PositionDetailView(DetailView):
     template_name = "journal/position_detail.html"
     model = Position
 
 
+@method_decorator(login_required, name='dispatch')
 class SchoolDetailView(DetailView):
     template_name = "journal/school_detail.html"
     model = School
@@ -165,6 +182,7 @@ class SubjectListView(ListView):
     model = Subject
 
 
+@method_decorator(login_required, name='dispatch')
 class SubjectDetailView(DetailView):
     template_name = "journal/subject_detail.html"
     model = Subject
@@ -175,6 +193,7 @@ class GradeDetailView(DetailView):
     model = Grade
 
 
+@method_decorator(login_required, name='dispatch')
 class UserDetailView(DetailView):
     template_name = "journal/user_detail.html"
     model = User
@@ -195,6 +214,7 @@ def student_add(request):
         form = StudentForm()
     return render(request, "journal/forms/student_add.html", {'form':form})
 
+@login_required
 def note_add(request):
     if request.method == 'POST':
         form = NoteForm(request.POST)
@@ -205,6 +225,7 @@ def note_add(request):
         form = NoteForm()
     return render(request, "journal/forms/note_add.html", {'form':form})
 
+@login_required
 def class_add(request):
     if request.method == 'POST':
         form = ClassForm(request.POST)
@@ -215,6 +236,7 @@ def class_add(request):
         form = ClassForm()
     return render(request, "journal/forms/class_add.html", {'form':form})
 
+@login_required
 def employee_add(request):
     if request.method == 'POST':
         form = EmployeeForm(request.POST)
@@ -225,6 +247,7 @@ def employee_add(request):
         form = EmployeeForm()
     return render(request, "journal/forms/employee_add.html", {'form':form})
 
+@login_required
 def classroom_add(request):
     if request.method == 'POST':
         form = ClassroomForm(request.POST)
@@ -235,6 +258,7 @@ def classroom_add(request):
         form = ClassroomForm()
     return render(request, "journal/forms/classroom_add.html", {'form':form})
 
+@login_required
 def parent_add(request):
     if request.method == 'POST':
         form = ParentForm(request.POST)
@@ -245,6 +269,7 @@ def parent_add(request):
         form = ParentForm()
     return render(request, "journal/forms/parent_add.html", {'form':form})
 
+@login_required
 def position_add(request):
     if request.method == 'POST':
         form = PositionForm(request.POST)
@@ -255,6 +280,7 @@ def position_add(request):
         form = PositionForm()
     return render(request, "journal/forms/position_add.html", {'form':form})
 
+@login_required
 def school_add(request):
     if request.method == 'POST':
         form = SchoolForm(request.POST)
@@ -265,6 +291,7 @@ def school_add(request):
         form = SchoolForm()
     return render(request, "journal/forms/school_add.html", {'form':form})
 
+@login_required
 def subject_add(request):
     if request.method == 'POST':
         form = SubjectForm(request.POST)
@@ -275,6 +302,7 @@ def subject_add(request):
         form = SubjectForm()
     return render(request, "journal/forms/subject_add.html", {'form':form})
 
+@login_required
 def grade_add(request):
     if request.method == 'POST':
         form = GradeForm(request.POST)
@@ -286,6 +314,7 @@ def grade_add(request):
     return render(request, "journal/forms/grade_add.html", {'form':form})
 
 
+@method_decorator(login_required, name='dispatch')
 class StudentDeleteView(DeleteView):
     model = Student
     success_url = reverse_lazy('journal:student-list')
@@ -298,6 +327,7 @@ class StudentDeleteView(DeleteView):
             return super().post(self, *args, **kwargs)
 
 
+@method_decorator(login_required, name='dispatch')
 class StudentUpdateView(UpdateView):
     model = Student
     fields = [
@@ -317,3 +347,8 @@ def my_view(request):
 class MyView(View):
     def get(self, request):
         return HttpResponse("Wynik GET z MyWiew")
+
+
+class PersonDetailView(DetailView):
+    model = Person
+    template_name = "journal/person_detail.html"

@@ -1,20 +1,20 @@
 from django import forms
-from journal.models import (Student, Employee, Position, Class_, Classroom,
-                            Subject, School, Note, Grade, Parent)
+from journal.models import (Student, Position, Class_, Classroom,
+                            Subject, School, Note, Grade)
 
 class StudentForm(forms.ModelForm):
 
     class Meta:
         model = Student
         fields = ['first_name', 'second_name', 'last_name', 'pesel',
-                  'which_class', 'parents']
-
-class EmployeeForm(forms.ModelForm):
-
-    class Meta:
-        model = Employee
-        fields = ['first_name', 'second_name', 'last_name', 'pesel', 'position',
                   'which_class']
+
+# class EmployeeForm(forms.ModelForm):
+# 
+#     class Meta:
+#         model = Employee
+#         fields = ['first_name', 'second_name', 'last_name', 'pesel', 'position',
+#                   'which_class']
 
 
 class PositionForm(forms.ModelForm):
@@ -65,9 +65,9 @@ class GradeForm(forms.ModelForm):
         fields = ['value', 'category', 'subject']
 
 
-class ParentForm(forms.ModelForm):
-
-    class Meta:
-        model = Parent
-        fields = ['first_name', 'second_name', 'last_name', 'telephone_number']
+# class ParentForm(forms.ModelForm):
+# 
+#     class Meta:
+#         model = Parent
+#         fields = ['first_name', 'second_name', 'last_name', 'telephone_number']
 

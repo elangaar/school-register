@@ -7,23 +7,23 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 
-class Employee(models.Model):
-    first_name = models.CharField(max_length=30)
-    second_name = models.CharField(max_length=30, null=True, blank=True)
-    last_name = models.CharField(max_length=30)
-    pesel = models.BigIntegerField()
-    position = models.ForeignKey('Position')
-    which_class = models.ForeignKey('Class_', null=True, blank=True, default=True)
-    slug = models.SlugField(unique=True)
-
-    class Meta:
-        ordering = ['position', 'last_name', 'first_name']
-
-    def get_absolute_url(self):
-        return reverse('journal:employee-detail', args=[self.slug])
-
-    def __str__(self):
-        return "{0} {1}".format(self.last_name, self.first_name)
+# class Employee(models.Model):
+#     first_name = models.CharField(max_length=30)
+#     second_name = models.CharField(max_length=30, null=True, blank=True)
+#     last_name = models.CharField(max_length=30)
+#     pesel = models.BigIntegerField()
+#     position = models.ForeignKey('Position')
+#     which_class = models.ForeignKey('Class_', null=True, blank=True, default=True)
+#     slug = models.SlugField(unique=True)
+# 
+#     class Meta:
+#         ordering = ['position', 'last_name', 'first_name']
+# 
+#     def get_absolute_url(self):
+#         return reverse('journal:employee-detail', args=[self.slug])
+# 
+#     def __str__(self):
+#         return "{0} {1}".format(self.last_name, self.first_name)
 
 
 class Position(models.Model):
@@ -122,11 +122,14 @@ class Student(models.Model):
     pesel = models.BigIntegerField()
     which_class = models.ForeignKey('Class_')
     grades = models.ManyToManyField('Grade', related_name='student')
-    parents = models.ManyToManyField('Parent')
+    # parents = models.ManyToManyField('Parent')
     slug = models.SlugField(unique=True)
 
     class Meta:
         ordering = ['first_name', 'last_name']
+        permissions = (
+            ('view_student', 'View student'),
+        )
 
     def get_absolute_url(self):
         return reverse("journal:student-detail", args=[self.slug])
@@ -170,21 +173,21 @@ class Note(models.Model):
     def __str__(self):
         return "{0}".format(self.title)
 
-class Parent(models.Model):
-    first_name = models.CharField(max_length=30)
-    second_name = models.CharField(max_length=30, null=True, blank=True)
-    last_name = models.CharField(max_length=30)
-    telephone_number = models.BigIntegerField()
-    slug = models.SlugField(unique=True)
-
-    class Meta:
-        ordering = ['first_name', 'last_name']
-
-    def get_absolute_url(self):
-        return reverse("journal:parent-detail", args=[self.slug])
-
-    def __str__(self):
-        return "{0} {1}".format(self.last_name, self.first_name)
+# class Parent(models.Model):
+#     first_name = models.CharField(max_length=30)
+#     second_name = models.CharField(max_length=30, null=True, blank=True)
+#     last_name = models.CharField(max_length=30)
+#     telephone_number = models.BigIntegerField()
+#     slug = models.SlugField(unique=True)
+# 
+#     class Meta:
+#         ordering = ['first_name', 'last_name']
+# 
+#     def get_absolute_url(self):
+#         return reverse("journal:parent-detail", args=[self.slug])
+# 
+#     def __str__(self):
+#         return "{0} {1}".format(self.last_name, self.first_name)
 
 
 
@@ -215,16 +218,16 @@ def create_slug_grade(instance, new_slug=None):
                                  instance.subject))
     return slug
 
-def create_slug_employee(instance, new_slug=None):
-    slug = slugify("%s-%s" % (instance.last_name, instance.first_name))
-    if new_slug is not None:
-        slug = new_slug
-    qs = Employee.objects.filter(slug=slug).order_by("-id")
-    exists = qs.exists()
-    if exists:
-        new_slug = "%s-%s-%s" % (instance.last_name, instance.first_name, qs.first().id)
-        return create_slug_employee(instance, new_slug=new_slug)
-    return slug
+# def create_slug_employee(instance, new_slug=None):
+#     slug = slugify("%s-%s" % (instance.last_name, instance.first_name))
+#     if new_slug is not None:
+#         slug = new_slug
+#     qs = Employee.objects.filter(slug=slug).order_by("-id")
+#     exists = qs.exists()
+#     if exists:
+#         new_slug = "%s-%s-%s" % (instance.last_name, instance.first_name, qs.first().id)
+#         return create_slug_employee(instance, new_slug=new_slug)
+#     return slug
 
 def create_slug_student(instance, new_slug=None):
     slug = slugify("%s-%s" % (instance.last_name, instance.first_name))
@@ -248,20 +251,20 @@ def create_slug_note(instance, new_slug=None):
         return create_slug_note(instance, new_slug=new_slug)
     return slug
 
-def create_slug_parent(instance, new_slug=None):
-    slug = slugify("%s-%s" % (instance.last_name, instance.first_name))
-    if new_slug is not None:
-        slug = new_slug
-    qs = Parent.objects.filter(slug=slug).order_by("-id")
-    exists = qs.exists()
-    if exists:
-        new_slug = "%s-%s-%s" % (instance.last_name, instance.first_name, qs.first().id)
-        return create_slug_employee(instance, new_slug=new_slug)
-    return slug
+#def create_slug_parent(instance, new_slug=None):
+#    slug = slugify("%s-%s" % (instance.last_name, instance.first_name))
+#    if new_slug is not None:
+#        slug = new_slug
+#    qs = Parent.objects.filter(slug=slug).order_by("-id")
+#    exists = qs.exists()
+#    if exists:
+#        new_slug = "%s-%s-%s" % (instance.last_name, instance.first_name, qs.first().id)
+#        return create_slug_employee(instance, new_slug=new_slug)
+#    return slug
 
-def pre_save_employee_receiver(sender, instance, *args, **kwargs):
-    if not instance.slug:
-        instance.slug = create_slug_employee(instance)
+# def pre_save_employee_receiver(sender, instance, *args, **kwargs):
+#     if not instance.slug:
+#         instance.slug = create_slug_employee(instance)
 
 def pre_save_classroom_receiver(sender, instance, *args, **kwargs):
     if not instance.slug:
@@ -271,9 +274,9 @@ def pre_save_student_receiver(sender, instance, *args, **kwargs):
     if not instance.slug:
         instance.slug = create_slug_student(instance)
 
-def pre_save_parent_receiver(sender, instance, *args, **kwargs):
-    if not instance.slug:
-        instance.slug = create_slug_parent(instance)
+# def pre_save_parent_receiver(sender, instance, *args, **kwargs):
+#     if not instance.slug:
+#         instance.slug = create_slug_parent(instance)
 
 def pre_save_note_receiver(sender, instance, *args, **kwargs):
     if not instance.slug:
@@ -299,9 +302,9 @@ def pre_save_grade_receiver(sender, instance, *args, **kwargs):
     if not instance.slug:
         instance.slug = create_slug_grade(instance)
 
-pre_save.connect(pre_save_employee_receiver, sender=Employee)
+# pre_save.connect(pre_save_employee_receiver, sender=Employee)
 pre_save.connect(pre_save_student_receiver, sender=Student)
-pre_save.connect(pre_save_parent_receiver, sender=Parent)
+# pre_save.connect(pre_save_parent_receiver, sender=Parent)
 pre_save.connect(pre_save_note_receiver, sender=Note)
 pre_save.connect(pre_save_position_receiver, sender=Position)
 pre_save.connect(pre_save_classroom_receiver, sender=Classroom)
@@ -310,4 +313,9 @@ pre_save.connect(pre_save_school_receiver, sender=School)
 pre_save.connect(pre_save_subject_receiver, sender=Subject)
 pre_save.connect(pre_save_grade_receiver, sender=Grade)
 
+class Person(models.Model):
+    name = models.CharField(max_length=30)
+    user = models.ForeignKey(User)
 
+    def __str__(self):
+        return "{0}".format(self.name)

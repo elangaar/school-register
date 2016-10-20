@@ -2,16 +2,18 @@ from django.conf.urls import url
 from .views import (
     ClassListView, ClassDetailView,
     StudentListView, StudentDetailView,
-    EmployeeListView, EmployeeDetailView,
+#    EmployeeListView, EmployeeDetailView,
     NoteListView, NoteDetailView,
     ClassroomListView, ClassroomDetailView,
-    ParentListView, ParentDetailView,
+#    ParentListView, ParentDetailView,
     PositionListView, PositionDetailView,
     SchoolDetailView,
     SubjectListView, SubjectDetailView,
     GradeDetailView,
     UserDetailView,
     StudentDeleteView, StudentUpdateView,
+    PersonDetailView,
+    student_list,
 )
 from .views import (
     student_add, note_add, class_add, employee_add,
@@ -22,12 +24,13 @@ from .views import (
 app_name='journal'
 urlpatterns = [
     url(r'^student/$', StudentListView.as_view(), name='student-list'),
+    url(r'^student_list/$', student_list),
     url(r'^student/(?P<slug>\w+-\w+[\w-]*)/$',
-        StudentDetailView.as_view(), 
+        StudentDetailView.as_view(),
         name='student-detail'
     ),
     url(r'^student/(?P<slug>\w+-\w+[\w-]*)/notes/$',
-        NoteListView.as_view(), 
+        NoteListView.as_view(),
         name='note-list'
     ),
     url(r'^student/add/$', student_add, name='student-add'),
@@ -39,24 +42,24 @@ urlpatterns = [
         name='class-detail'),
     url(r'^class/add/$', class_add, name='class-add'),
 
-    url(r'^employee/$', EmployeeListView.as_view(), name='employee-list'),
-    url(r'^employee/(?P<slug>\w+-\w+[\w-]*)/$',
-        EmployeeDetailView.as_view(), name='employee-detail'),
-    url(r'^employee/add/$', employee_add, name='employee-add'),
+#    url(r'^employee/$', EmployeeListView.as_view(), name='employee-list'),
+#    url(r'^employee/(?P<slug>\w+-\w+[\w-]*)/$',
+#        EmployeeDetailView.as_view(), name='employee-detail'),
+#    url(r'^employee/add/$', employee_add, name='employee-add'),
 
     url(r'^classroom/$', ClassroomListView.as_view(), name='classroom-list'),
     url(r'^classroom/(?P<slug>\d+)/$',
-        ClassroomDetailView.as_view(), 
+        ClassroomDetailView.as_view(),
         name='classroom-detail'
     ),
     url(r'^classroom/add/$', classroom_add, name='classroom-add'),
 
-    url(r'^parent/$', ParentListView.as_view(), name='parent-list'),
-    url(r'^parent/(?P<slug>\w+-\w+[\w-]*)/$',
-        ParentDetailView.as_view(), 
-        name='parent-detail'
-    ),
-    url(r'^parent/add/$', parent_add, name='parent-add'),
+#    url(r'^parent/$', ParentListView.as_view(), name='parent-list'),
+#    url(r'^parent/(?P<slug>\w+-\w+[\w-]*)/$',
+#        ParentDetailView.as_view(), 
+#        name='parent-detail'
+#    ),
+#    url(r'^parent/add/$', parent_add, name='parent-add'),
 
     url(r'^position/add/$', position_add, name='position-add'),
     url(r'^position/$', PositionListView.as_view(), name='position-list'),
@@ -84,5 +87,6 @@ urlpatterns = [
         StudentUpdateView.as_view(), 
         name='student-update'
     ),
+    url(r'^person/(?P<pk>\d+)/$', PersonDetailView.as_view(), name='person-detail'),
 ]
 
