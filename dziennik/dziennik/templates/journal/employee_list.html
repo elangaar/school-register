@@ -4,8 +4,12 @@
 
 {% block content %}
 {% for employee in object_list %}
-    <p> {{ employee.last_name }} {{ employee.first_name }} - 
-        {{ employee.position.name }} - 
-        {{ employee.which_class.level }}{{ employee.which_class.branch }}</p> 
+    <p> <a href="{{ employee.get_absolute_url }}">
+        {{ employee.last_name }} {{ employee.first_name }} </a> - 
+        <a href="{{ employee.position.get_absolute_url }}"> 
+            {{ employee.position.name }} </a> - 
+        <a href="{{ employee.which_class.get_absolute_url }}"> 
+            {{ employee.which_class.level }}{{ employee.which_class.branch}} </a></p> 
 {% endfor %}
+<p><a href="{% url "journal:employee-add" %}"> Dodaj pracownika </a></p>
 {% endblock content %}

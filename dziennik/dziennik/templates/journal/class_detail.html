@@ -4,11 +4,16 @@
 
 {% block content %}
 <p> Klasa: {{ object.level }}{{ object.branch }} </p>
-<p> Sala lekcyjna: {{ object.classroom }} </p>
-<p> Szkoła: {{ object.school }} </p>
+<p> Sala lekcyjna: <a href="{{ object.classroom.get_absolute_url }}">
+    {{ object.classroom }} </a></p>
+<p> Szkoła: <a href="{{ object.school.get_absolute_url }}"> {{ object.school }}
+</a> </p>
+<p> Wychowawca: {% for employee in object.employee_set.all %} 
+<a href="{{ employee.get_absolute_url }}"> 
+    {{ employee.last_name }} {{ employee.first_name }} </a>{% endfor %} </p>
 <h3> Uczniowie: </h3>
 {% for student in object.student_set.all %}
-<p><a href="{% url 'journal:student-detail' student.slug %}"> {{ student }} </a></p>
+<p><a href="{{ student.get_absolute_url }}"> {{ student }} </a></p>
 {% endfor %}
 <p> <a href="{% url 'journal:student-list' %}"> Uczniowie szkoły</a></p>
 

@@ -4,10 +4,12 @@
 
 {% block content %}
 {% for class in object_list %}
-<p> <a href="{% url 'journal:class-detail' class.slug %}"> {{ class.level }}
-    {{class.branch }} </a>
+<p> <a href="{{ class.get_absolute_url }}"> 
+    {{ class.level }} {{class.branch }} </a>
     {% for employee in class.employee_set.all %}
-        {{ employee.last_name }} {{ employee.first_name }} 
+    <a href="{{ employee.get_absolute_url }}"> 
+        {{ employee.last_name }} {{ employee.first_name }} </a>
     {% endfor %}</p>
 {% endfor %}
+<p><a href="{% url "journal:class-add" %}"> Dodaj klasę </a></p>
 {% endblock content %}

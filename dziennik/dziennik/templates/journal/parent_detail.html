@@ -1,7 +1,13 @@
 {% extends "base.html" %}
 
 {% block title %} {% endblock title %}
-:
-{% block content %}
 
+{% block content %}
+<h2> {{ object.last_name }} {% if object.second_name %} 
+    {{ object.second_name }} {% endif %} {{ object.first_name }}</h2>
+{% for student in object.student_set.all %} 
+<p> <a href="{{ student.get_absolute_url }}">
+    {{ student.last_name }} {{student.first_name }} </a></p>
+{% endfor %} 
+<p> {{ object.telephone_number }} </p>
 {% endblock content %}

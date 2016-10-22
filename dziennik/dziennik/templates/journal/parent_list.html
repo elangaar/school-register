@@ -3,11 +3,14 @@
 {% block title %} Rodzice {% endblock title %}
 :
 {% block content %}
+<h2> Lista rodziców </h2>
 {% for parent in object_list %}
-    <p> {{ parent.last_name }} {{ parent.first_name }} - 
+<p> <a href="{{ parent.get_absolute_url }}"> 
+    {{ parent.last_name }} {{ parent.first_name }} </a> - 
     {% for student in parent.student_set.all %}
-        {{ student.last_name }} {{ student.first_name }}
+    <a href="{{ student.get_absolute_url }}"> 
+        {{ student.last_name }} {{ student.first_name }} </a>
     {% endfor %} </p>
-    
 {% endfor %}
+<p><a href="{% url "journal:parent-add" %}"> Dodaj rodzica </a></p>
 {% endblock content %}

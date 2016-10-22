@@ -5,6 +5,8 @@
 {% block content %}
 
 {% for classroom in classroom_list %}
-    <p> {{ classroom.number }} </p>
+<p> <a href="{{ classroom.get_absolute_url }}"> {{ classroom.number }} </a></p>
 {% endfor %}
+<p><a href="{% url "journal:classroom-add" %}"> Dodaj salę </a></p>
+
 {% endblock content %}

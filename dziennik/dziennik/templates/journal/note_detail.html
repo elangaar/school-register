@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
-{% block title %} Uwaga {{ object.title }} {% endblock %}
+{% block title %} Uwaga: {{ object.title }} {% endblock %}
 
 {% block content %}
-<p> {{ object.title }} {{ object.student.first_name }} 
-{{ object.student.last_name }}</p>
+<p> {{ object.title }} <a href="{{ object.student.get_absolute_url }}"> 
+    {{ object.student.first_name }} {{ object.student.last_name }} </a></p>
 <p> {{ object.content }} </p>
 {% endblock content %}

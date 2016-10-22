@@ -1,7 +1,12 @@
 {% extends "base.html" %}
 
-{% block title %} {% endblock title %}
-:
-{% block content %}
+{% block title %} {{ object.name }} {% endblock title %}
 
+{% block content %}
+<p> {{ object.name }} </p>
+<p> {{ object.description }} </p>
+{% for employee in object.employee_set.all %}
+    <p> <a href="{{ employee.get_absolute_url }}"> {{employee.first_name }}
+        {{ employee.last_name }} </a></p>
+{% endfor %}
 {% endblock content %}

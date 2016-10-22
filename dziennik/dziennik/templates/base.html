@@ -12,6 +12,14 @@
 {% block content %}
 
 {% endblock content %}
+{% block footer %}
+{% if user.is_authenticated %}
+    <p> <a href="{% url "account_logout" %}"> Wyloguj sie </a> </p>
+{%else %}
+    <p> <a href="{% url "account_login" %}"> Zaloguj sie </a> </p>
+{% endif %}
+
+{% endblock footer %}
 </body>
 
 

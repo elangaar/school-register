@@ -1,7 +1,13 @@
 {% extends "base.html" %}
 
 {% block title %} Sale lekcyjne {% endblock title %}
-:
+
 {% block content %}
+<p> Numer sali: {{ object.number }} </p>
+<p> Klasy, które się w niej uczą: </p>
+{% for class in object.class__set.all %}
+<p> <a href="{{ class.get_absolute_url }}"> {{ class.level }}{{ class.branch }}
+</a></p> 
+{% endfor %}
 
 {% endblock content %}

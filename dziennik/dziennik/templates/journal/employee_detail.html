@@ -2,10 +2,11 @@
 
 {% block title %} {{ object.last_name }} {{ object.first_name }} {% endblock title %}
 {% block content %}
-<p> {{ object.last_name }} {{ object.first_name }} </p>
+<h2> {{ object.last_name }} {% if object.second_name %} {{ object.second_name }}
+    {% endif %} {{ object.first_name }} </h2>
 <p> {{ object.pesel }} </p>
-<p> {{ object.position }} </p>
-<p> {{ object.which_class.level }}{{ object.which_class.branch }} </p>
-
+<p> <a href="{{ object.position.get_absolute_url }}">{{ object.position }} </a></p>
+<p> <a href="{{ object.which_class.get_absolute_url }}"> 
+    {{ object.which_class.level }}{{ object.which_class.branch }} </a></p>
 
 {% endblock content %}

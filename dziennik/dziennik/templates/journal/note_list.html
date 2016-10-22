@@ -1,9 +1,10 @@
 {% extends "base.html" %}
 
-{% block title %} Uwagi {% endblock title %}
+{% block title %} Uwagi ucznia {% endblock title %}
 
 {% block content %}
 {% for note in object_list %}
-    <p> {{ note.title }} </p>
+<p> <a href="{{ note.get_absolute_url }}"> {{ note.title }} </a></p>
 {% endfor %}
+<p><a href="{% url "journal:note-add" %}"> Dodaj uwagę </a></p>
 {% endblock content %}

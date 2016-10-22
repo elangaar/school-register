@@ -6,5 +6,13 @@
 <h2> HEADLINE </h2>
 <hr>
 <h4> Main section </h4>
+{% if user.is_authenticated %}
+<p> Jesteś zalogowany jako użytkownik {{ user.first_name }} 
+{{ user.last_name }}</p>
+<p><a href="{% url 'account_logout' %}"> Wyloguj się </a></p>
+{% else %}
+<p><a href="{% url 'account_login' %}"> Zaloguj się </a></p>
+{% endif %}
+
 
 {% endblock content %}
