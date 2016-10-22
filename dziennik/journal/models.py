@@ -33,6 +33,9 @@ class Position(models.Model):
 
     class Meta:
         ordering = ['name']
+        permissions = (
+            ('view_position', 'View position'),
+        )
 
     def get_absolute_url(self):
         return reverse("journal:position-detail", args=[self.slug])
@@ -50,6 +53,9 @@ class Class_(models.Model):
 
     class Meta:
         ordering = ['level', 'branch']
+        permissions = (
+            ('view_class', 'View class'),
+        )
 
     def get_absolute_url(self):
         return reverse("journal:class-detail", args=[self.slug])
@@ -64,6 +70,10 @@ class Classroom(models.Model):
 
     class Meta:
         ordering = ['number']
+        permissions = (
+            ('view_classroom', 'View classroom'),
+        )
+
 
     def get_absolute_url(self):
         return reverse("journal:classroom-detail", args=[self.number])
@@ -92,6 +102,9 @@ class School(models.Model):
 
     class Meta:
         ordering = ['name']
+        permissions = (
+            ('view_school', 'View school'),
+        )
 
     def get_absolute_url(self):
         return reverse("journal:school-detail", args=[self.slug])
@@ -107,6 +120,9 @@ class Subject(models.Model):
 
     class Meta:
         ordering = ['name']
+        permissions = (
+            ('view_subject', 'View subject'),
+        )
 
     def get_absolute_url(self):
         return reverse("journal:subject-detail", args=[self.slug])
@@ -149,6 +165,10 @@ class Grade(models.Model):
 
     class Meta:
         ordering = ['value']
+        permissions = (
+            ('view_grade', 'View grade'),
+        )
+
 
     def get_absolute_url(self):
         return reverse("journal:grade-detail", args=[self.grade])
@@ -166,6 +186,9 @@ class Note(models.Model):
 
     class Meta:
         ordering = ['title']
+        permissions = (
+            ('view_note', 'View note'),
+        )
 
     def get_absolute_url(self):
         return reverse("journal:note-detail", args=[self.slug])
@@ -200,7 +223,7 @@ def create_slug_classroom(instance):
     slug = slugify("%s" % (instance.number, ))
     return slug
 
-def create_slug_class_(instance):
+
     slug = slugify("%s-%s" % (instance.level, instance.branch))
     return slug
 
